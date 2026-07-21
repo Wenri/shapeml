@@ -1270,7 +1270,6 @@ void HalfedgeMesh::FillExportBuffers(bool triangulate, Vec3Vec* vertices,
                                      IdxVec* normal_indices,
                                      IdxVec* uv_indices) const {
   assert(vertices->empty());
-  assert(vertices->empty());
   assert(normals->empty());
   assert(face_sizes->empty());
   assert(vertex_indices->empty());

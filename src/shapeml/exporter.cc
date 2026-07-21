@@ -261,20 +261,25 @@ void Exporter::ExportOBJ(const Shape* shape, const std::string& file_name,
       for (size_t k = 0; k < face_sizes[i].size(); ++k) {
         const uint32_t num_vertices = face_sizes[i][k];
 
-        size_t num_changes = 0;
-        for (size_t j = 0; j < num_vertices; ++j) {
-          // Somtimes, due to the fixed point rounding, it can happend that we
-          // get degenerate one or several idetical vertex indices. We simply
-          // skip such faces if they have < 3 vertices.
-          // TODO(stefalie): Ideally we should check if the vertices of a
-          // skippped face are used elsewhere, and if not we should probably
-          // delete it.
-          if (vertex_indices[i][idx_offset + j] !=
-              vertex_indices[i][idx_offset + (j + 1) % num_vertices]) {
-            ++num_changes;
+        assert(idx_offset + num_vertices <= vertex_indices[i].size());
+        assert(idx_offset + num_vertices <= normal_indices[i].size());
+        assert(idx_offset + num_vertices <= uv_indices[i].size());
+
+        // Sometimes, due to the fixed point rounding, it can happen that we
+        // get degenerate faces where two (or more) vertex indices are
+        // identical. We simply skip such faces.
+        // TODO(stefalie): Ideally we should check if the vertices of a skipped
+        // face are used elsewhere, and if not we should probably delete it.
+        bool skip_face = false;
+        for (size_t j = 0; j + 1 < num_vertices && !skip_face; ++j) {
+          for (size_t l = j + 1; l < num_vertices; ++l) {
+            if (vertex_indices[i][idx_offset + j] ==
+                vertex_indices[i][idx_offset + l]) {
+              skip_face = true;
+              break;
+            }
           }
         }
-        const bool skip_face = num_changes < 3;
 
         if (!skip_face) {
           if (maya_hack && !uvs.empty() &&

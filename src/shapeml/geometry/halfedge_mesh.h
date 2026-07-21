@@ -90,9 +90,12 @@ class HalfedgeMesh {
                         IdxVec* indices) const;
 
   // Fills buffers for file exporters.
-  // TODO(stefalie): Add a booelan parameter 'triangulize' that allows toggling
-  // the output between triangles and polygons of aribtrary size. Note that non-
-  // triangulized geometry would also require an array of polygon sizes.
+  // If 'triangulate' is set, all faces are triangulated and 'face_sizes' will
+  // contain a 3 for each output triangle. Otherwise the faces are exported as
+  // polygons of arbitrary size, and 'face_sizes' will contain the number of
+  // vertices of each polygon. The faces are stored consecutively in the index
+  // buffers, i.e., the i-th face consists of the face_sizes[i] indices that
+  // follow the indices of the preceding faces.
   void FillExportBuffers(bool triangulate, Vec3Vec* vertices, Vec3Vec* normals,
                          Vec2Vec* uvs, IdxVec* face_sizes,
                          IdxVec* vertex_indices, IdxVec* normal_indices,
